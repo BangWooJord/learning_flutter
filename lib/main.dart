@@ -1,46 +1,57 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-void main() {
-  runApp(MyApp());
-}
+import 'package:table_calendar/table_calendar.dart';
+
+
+final Map<DateTime, List> _holidays = {
+  DateTime(2021, 12, 31) : ['New Year\'s Day'],
+};
+Color _mainColorTheme = Colors.pink[900];
+Color _accentColor = Colors.cyan[800];
+
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      home: HomePage(),
       theme: ThemeData(
-        primarySwatch: Colors.purple,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primaryColor: _mainColorTheme,
+        accentColor: _accentColor,
       ),
-      home: MyHomePage(title: 'Misha is gay'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
+class HomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  double _ratio;
-  int pp;
-  double height;
-  void _changeHeight(double h){
-      height = h;
+class _HomePageState extends State<HomePage> {
+  CalendarController _calendarController;
+  List _selectedEvents;
+  Map<DateTime, List> _events;
+
+  @override
+  void initState() {
+    super.initState();
+    final _selectedDay = DateTime.now();
+    _calendarController = CalendarController();
+    _events = {
+      DateTime(2021, 2, 2) : [
+        'My cool event pogchamp',
+        'Second even yes',
+      ],
+    };
+    _selectedEvents = _events[_selectedDay]??[];
+
   }
-  void _changePP(int p){
-      pp = p;
-  }
-  void _calcRatio() {
+
+  void _onDaySelected(DateTime day, List events, List holidays){
     setState(() {
-      _ratio =  100 * pp / height;
+      _selectedEvents = events;
     });
   }
 
@@ -48,86 +59,177 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        backgroundColor: _mainColorTheme,
+        title: Text('Learning App'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            color: Colors.grey[50],
+            onPressed: (){
+              print('Setting clicked');
+            },
+          ),
+        ],
       ),
-      body: Center(
-        child: Column(
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[TextField(
-              onChanged: (pp){
-                _changePP(int.parse(pp));
-              },
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly
-            ],
-              textAlignVertical: TextAlignVertical.center,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: Colors.tealAccent[400],
-            ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                  labelText: 'Your gorgeous cock(cm)',
-                    hintText: '4',
-                    hintStyle: TextStyle(
-                      color: Colors.amberAccent[400]
-                  )
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          TableCalendar(
+            events: _events,
+            holidays: _holidays,
+            initialCalendarFormat: CalendarFormat.month,
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            daysOfWeekStyle: DaysOfWeekStyle(
+              weekendStyle: TextStyle(
+                color: _mainColorTheme,
               ),
             ),
-            SizedBox(height: 20, width: 20),
-            TextField(
-              onChanged: (height){
-                _changeHeight(double.parse(height));
-                _calcRatio();
-              },
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
-              ],
-              textAlignVertical: TextAlignVertical.center,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: Colors.tealAccent[400],
+            headerStyle: HeaderStyle(
+              formatButtonDecoration: BoxDecoration(
+                color: Colors.grey[50],
+                boxShadow: [
+                  new BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    offset: Offset.fromDirection(20.0, 2.0),
+                  ),
+                ],
+                border: Border.all(
+                  color: _accentColor,
+                  width: 1.5,
+                ),
+                borderRadius: BorderRadius.circular(15.0),
               ),
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                labelText: 'Your marvelous height(cm)',
-                  hintText: '168',
-                  hintStyle: TextStyle(
-                      color: Colors.amberAccent[400]
-                  )
+              formatButtonTextStyle: TextStyle(
+                color: _accentColor,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 60, width: 120),
-            Text(
-              'Your height to cock ratio is',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                color: Colors.redAccent[700],
-                decoration: TextDecoration.underline,
+            calendarStyle: CalendarStyle(
+              weekdayStyle: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 17.0,
               ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              '$_ratio %',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 40,
-                color: Colors.redAccent[700],
+              weekendStyle: TextStyle(
+                color: _mainColorTheme,
+                fontWeight: FontWeight.w600,
+                fontSize: 17.0,
               ),
+              todayColor: _accentColor.withOpacity(0.5),
+              selectedColor: _mainColorTheme,
             ),
-            SizedBox(height: 50),
-            Image.asset('assets/images/floppa.jpeg'),
-          ],
+            calendarController: _calendarController,
+            onDaySelected: _onDaySelected,
+          ),
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.all(10.0),
+              padding: EdgeInsets.fromLTRB(0, 10.0, 0, 0),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: _mainColorTheme,
+                    width: 2.0,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+              ),
+              child: _buildEventList(),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(
+          Icons.add
         ),
+        onPressed: (){
+          _showAlertDialog(context);
+        },
+        backgroundColor: _mainColorTheme,
       ),
+
+    );
+  }
+
+  void _showAlertDialog(BuildContext context){
+    AlertDialog _alertDialog = AlertDialog(
+      title: Text('Add a note'),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text('Note',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: _mainColorTheme,
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            TextField(
+              onChanged: (value){
+
+              },
+              decoration: InputDecoration(
+                //border: Border.all(color: Colors.blue, width: 10.0, style: BorderStyle.solid),
+                hintText: 'Feed my cat',
+              ),
+            ),
+            TextField(
+              onChanged: (value){
+
+              },
+              decoration: InputDecoration(
+                hintText: '29.12.2001',
+              ),
+            ),
+          ],
+      ),
+      actions: [
+        FlatButton(
+            color: _mainColorTheme,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            onPressed: (){},
+            child: Text(
+              'Add note',
+              style: TextStyle(
+                color: Colors.grey[50],
+                fontWeight: FontWeight.w700,
+                fontSize: 16.0,
+              ),
+            ),
+        ),
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => _alertDialog,
+    );
+  }
+
+  Widget _buildEventList(){
+    return ListView(
+      children: _selectedEvents.map((e) => Container(
+        margin: EdgeInsets.all(5.0),
+        decoration: BoxDecoration(
+          color: Colors.pink[50].withAlpha(100),
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+          border: Border.all(
+            color: _mainColorTheme,
+            width: 2.0,
+          ),
+        ),
+        child: ListTile(
+          title: Text(
+            e.toString(),
+          )
+        )
+      )).toList(),
     );
   }
 }
