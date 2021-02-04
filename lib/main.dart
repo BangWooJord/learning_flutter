@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   List _selectedEvents;
   Map<DateTime, List> _events;
   String _note;
+  DateTime _selectedDay;
 
   @override
   void initState() {
@@ -52,6 +53,7 @@ class _HomePageState extends State<HomePage> {
   void _onDaySelected(DateTime day, List events, List holidays) {
     setState(() {
       _selectedEvents = events;
+      _selectedDay = day;
     });
   }
 
@@ -148,6 +150,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _addEvent(DateTime _dateTime){
+    _events.putIfAbsent(_dateTime, () => [_note]);
+  }
+
   void _showAlertDialog(BuildContext context) {
     AlertDialog _alertDialog = AlertDialog(
       title: Text('Add a note'),
@@ -185,7 +191,10 @@ class _HomePageState extends State<HomePage> {
             primary: _mainColorTheme,
             elevation: 3.0,
           ),
-          onPressed: () {},
+          onPressed: () {
+            print('add note');
+            _addEvent(_selectedDay);
+          },
           child: Text(
             'Add note',
             style: TextStyle(
