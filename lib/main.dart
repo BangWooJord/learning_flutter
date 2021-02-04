@@ -68,6 +68,7 @@ class _HomePageState extends State<HomePage> {
             color: _bgColor,
             onPressed: () {
               print('Setting clicked');
+              //make a second window for settings
             },
           ),
         ],
