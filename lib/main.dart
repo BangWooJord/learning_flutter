@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-
 final Map<DateTime, List> _holidays = {
-  DateTime(2021, 12, 31) : ['New Year\'s Day'],
+  DateTime(2021, 12, 31): ['New Year\'s Day'],
 };
 Color _mainColorTheme = Colors.pink[900];
 Color _accentColor = Colors.cyan[800];
+Color _bgColor = Colors.grey[50];
 
 void main() => runApp(MyApp());
 
@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   CalendarController _calendarController;
   List _selectedEvents;
   Map<DateTime, List> _events;
+  String _note;
 
   @override
   void initState() {
@@ -40,16 +41,15 @@ class _HomePageState extends State<HomePage> {
     final _selectedDay = DateTime.now();
     _calendarController = CalendarController();
     _events = {
-      DateTime(2021, 2, 2) : [
+      DateTime(2021, 2, 2): [
         'My cool event pogchamp',
         'Second even yes',
       ],
     };
-    _selectedEvents = _events[_selectedDay]??[];
-
+    _selectedEvents = _events[_selectedDay] ?? [];
   }
 
-  void _onDaySelected(DateTime day, List events, List holidays){
+  void _onDaySelected(DateTime day, List events, List holidays) {
     setState(() {
       _selectedEvents = events;
     });
@@ -64,8 +64,8 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
-            color: Colors.grey[50],
-            onPressed: (){
+            color: _bgColor,
+            onPressed: () {
               print('Setting clicked');
             },
           ),
@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage> {
             ),
             headerStyle: HeaderStyle(
               formatButtonDecoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: _bgColor,
                 boxShadow: [
                   new BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -139,69 +139,61 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.add
-        ),
-        onPressed: (){
+        child: Icon(Icons.add),
+        onPressed: () {
           _showAlertDialog(context);
         },
         backgroundColor: _mainColorTheme,
       ),
-
     );
   }
 
-  void _showAlertDialog(BuildContext context){
+  void _showAlertDialog(BuildContext context) {
     AlertDialog _alertDialog = AlertDialog(
       title: Text('Add a note'),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
       content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text('Note',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                color: _mainColorTheme,
-                fontSize: 16.0,
-                fontWeight: FontWeight.w600,
-              ),
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            'Note',
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              color: _mainColorTheme,
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
             ),
-            TextField(
-              onChanged: (value){
-
-              },
-              decoration: InputDecoration(
-                //border: Border.all(color: Colors.blue, width: 10.0, style: BorderStyle.solid),
-                hintText: 'Feed my cat',
-              ),
+          ),
+          TextField(
+            onChanged: (value) {
+              _note = value;
+            },
+            decoration: InputDecoration(
+              hintText: 'Feed my cat',
             ),
-            TextField(
-              onChanged: (value){
-
-              },
-              decoration: InputDecoration(
-                hintText: '29.12.2001',
-              ),
-            ),
-          ],
+          ),
+        ],
       ),
       actions: [
-        FlatButton(
-            color: _mainColorTheme,
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
-            onPressed: (){},
-            child: Text(
-              'Add note',
-              style: TextStyle(
-                color: Colors.grey[50],
-                fontWeight: FontWeight.w700,
-                fontSize: 16.0,
-              ),
+            primary: _mainColorTheme,
+            elevation: 3.0,
+          ),
+          onPressed: () {},
+          child: Text(
+            'Add note',
+            style: TextStyle(
+              color: _bgColor,
+              fontWeight: FontWeight.w700,
+              fontSize: 16.0,
             ),
+          ),
         ),
       ],
     );
@@ -212,24 +204,24 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildEventList(){
+  Widget _buildEventList() {
     return ListView(
-      children: _selectedEvents.map((e) => Container(
-        margin: EdgeInsets.all(5.0),
-        decoration: BoxDecoration(
-          color: Colors.pink[50].withAlpha(100),
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          border: Border.all(
-            color: _mainColorTheme,
-            width: 2.0,
-          ),
-        ),
-        child: ListTile(
-          title: Text(
-            e.toString(),
-          )
-        )
-      )).toList(),
+      children: _selectedEvents
+          .map((e) => Container(
+              margin: EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                color: _bgColor,
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+                border: Border.all(
+                  color: _mainColorTheme,
+                  width: 2.0,
+                ),
+              ),
+              child: ListTile(
+                  title: Text(
+                e.toString(),
+              ))))
+          .toList(),
     );
   }
 }
