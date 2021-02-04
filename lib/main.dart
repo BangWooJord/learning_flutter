@@ -42,9 +42,8 @@ class _HomePageState extends State<HomePage> {
     final _selectedDay = DateTime.now();
     _calendarController = CalendarController();
     _events = {
-      DateTime(2021, 2, 2): [
-        'My cool event pogchamp',
-        'Second even yes',
+      DateTime(2021, 12, 31): [
+        'Have fun - its NEW YEAR!!!',
       ],
     };
     _selectedEvents = _events[_selectedDay] ?? [];
@@ -192,8 +191,11 @@ class _HomePageState extends State<HomePage> {
             elevation: 3.0,
           ),
           onPressed: () {
-            print('add note');
+            if(_selectedDay == null){
+              _selectedDay = DateTime.now();
+            }
             _addEvent(_selectedDay);
+            Navigator.of(context, rootNavigator: true).pop();
           },
           child: Text(
             'Add note',
