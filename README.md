@@ -1,1 +1,2 @@
-## Git rep for my flutter learning 
+## Calendar note app to learn Flutter
+Did it using table_calendar API
