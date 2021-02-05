@@ -1,1 +1,1 @@
-## Git rep for my flutter learning 
+## Calendar note app to learn Flutter
