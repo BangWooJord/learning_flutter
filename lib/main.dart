@@ -84,6 +84,7 @@ class _HomePageState extends State<HomePage> {
             daysOfWeekStyle: DaysOfWeekStyle(
               weekendStyle: TextStyle(
                 color: _mainColorTheme,
+                fontWeight: FontWeight.w400,
               ),
             ),
             headerStyle: HeaderStyle(
@@ -106,18 +107,101 @@ class _HomePageState extends State<HomePage> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            calendarStyle: CalendarStyle(
-              weekdayStyle: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 17.0,
-              ),
-              weekendStyle: TextStyle(
-                color: _mainColorTheme,
-                fontWeight: FontWeight.w600,
-                fontSize: 17.0,
-              ),
-              todayColor: _accentColor.withOpacity(0.5),
-              selectedColor: _mainColorTheme,
+            builders: CalendarBuilders(
+              dayBuilder: (context, date, _) {
+                return Container(
+                  child: Center(
+                    child: Text(
+                      '${date.day}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 17.0,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              weekendDayBuilder: (context, date, _) {
+                return Container(
+                  child: Center(
+                    child: Text(
+                      '${date.day}',
+                      style: TextStyle(
+                        color: _mainColorTheme,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 17.0,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              todayDayBuilder: (context, date, _) {
+                return Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: _bgColor,
+                    border: Border.all(
+                      color: _accentColor,
+                      width: 4.0,
+                    ),
+                    borderRadius: BorderRadius.circular(50.0),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${date.day}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 17.0,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              //TODO: Fix inability to add more than 1 notes to a day.
+              //TODO: Size of days circles without notes attached to them. Misalignment of text
+              selectedDayBuilder: (context, date, _) {
+                return Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: _mainColorTheme,
+                    borderRadius: BorderRadius.circular(50.0),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${date.day}',
+                      style: TextStyle(
+                        color: _bgColor,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 17.0,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              markersBuilder: (context, date, events, holidays) {
+                final children = <Widget>[];
+                if (events.isNotEmpty) {
+                  children.add(
+                    Positioned(
+                      right: 1,
+                      bottom: 1,
+                      child: _buildEventsMarker(date, events),
+                    ),
+                  );
+                }
+                if (holidays.isNotEmpty) {
+                  children.add(
+                    Positioned(
+                      left: 1,
+                      top: 1,
+                      child: _buildEventsMarker(date, events),
+                    ),
+                  );
+                }
+                return children;
+              },
             ),
             calendarController: _calendarController,
             onDaySelected: _onDaySelected,
@@ -150,7 +234,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _addEvent(DateTime _dateTime){
+  void _addEvent(DateTime _dateTime) {
     _events.putIfAbsent(_dateTime, () => [_note]);
   }
 
@@ -192,7 +276,7 @@ class _HomePageState extends State<HomePage> {
             elevation: 3.0,
           ),
           onPressed: () {
-            if(_selectedDay == null){
+            if (_selectedDay == null) {
               _selectedDay = DateTime.now();
             }
             _addEvent(_selectedDay);
@@ -213,6 +297,32 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) => _alertDialog,
+    );
+  }
+
+  Widget _buildEventsMarker(DateTime date, List events) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      width: 15.0,
+      height: 15.0,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: _calendarController.isSelected(date)
+            ? _accentColor
+            : _calendarController.isToday(date)
+                ? _mainColorTheme
+                : _mainColorTheme,
+      ),
+      child: Center(
+        child: Text(
+          '${events.length}',
+          style: TextStyle(
+            fontSize: 12.0,
+            fontWeight: FontWeight.w800,
+            color: _bgColor,
+          ),
+        ),
+      ),
     );
   }
 
